@@ -1,0 +1,57 @@
+
+
+/* MEDICAL */
+
+.main{
+    background-image:none;
+    background-size:cover;   
+    background-color:transparent;   
+    background-color:#f1f1f1;
+    
+}
+
+.startup{
+    background-image:none;
+    background-size:cover;   
+    background-color:#f1f1f1;
+    
+}
+
+.startupWrapper{
+    background-color:#e2f3fe;
+    background-image: none;
+    background-size:cover; 
+}
+
+
+
+.avatarWrapper{
+    background: none;
+    background-color:transparent;
+}
+
+.avatarStillWrapper{
+    background-image:none;
+}
+
+.videoSectionWrap .videoWrap{
+    background-image:none;
+    background-color:transparent;
+    border-radius: 0;
+    width: unset;
+    max-width: unset;    
+}
+
+
+#canvasElement{
+    border-radius: 0;
+}
+
+.videoWrap .videoEle{
+    border-radius: 0;
+}
+
+.talkRow{
+    background-color: #8dd5f6;
+    min-height:10vh;
+}

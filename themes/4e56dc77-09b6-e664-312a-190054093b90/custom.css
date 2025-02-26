@@ -1,0 +1,58 @@
+
+
+/*
+.main{
+    background-image:url(./assets/iamsara-demo-tui.jpg);
+    background-size:cover;   
+    background-color:transparent;   
+    background-color:#e2f3fe;
+    
+}
+
+.startup{
+    
+    background-image:url(./assets/iamsara-demo-tui.jpg);
+    background-size:cover;   
+    background-color:#e2f3fe;
+    
+}
+
+.startupWrapper{
+    background-color:#e2f3fe;
+    background-image: url(./assets/tui-start.jpg);
+    background-size:cover; 
+}
+
+
+
+.avatarWrapper{
+    background: none;
+    background-color:transparent;
+}
+
+.avatarStillWrapper{
+    background-image:none;
+}
+
+.videoSectionWrap .videoWrap{
+    background-image:none;
+    background-color:transparent;
+    border-radius: 0;
+    width: unset;
+    max-width: unset;    
+}
+
+*/
+
+#canvasElement{
+    border-radius: 0;
+}
+
+.videoWrap .videoEle{
+    border-radius: 0;
+}
+
+.talkRow{
+    background-color: #8dd5f6;
+    min-height:10vh;
+}

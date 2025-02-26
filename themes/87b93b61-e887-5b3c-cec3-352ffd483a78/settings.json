@@ -1,0 +1,38 @@
+{
+    "app": {
+        "title": "Medical Assistent",
+        "assistentId": "asst_6klaMj9vplPrUWlhb0oUpE5N",
+        "avatarId": "Dexter_Doctor_Sitting2_public",
+        "voiceId": "eacafc39d7784b738f77e4335326f761"
+    },
+    "content": {
+        "general": {
+            "windowTitle": "Medical - streaming avatar"
+        },
+        "startup": {
+            "startButtonText": "Start"
+        },
+        "main": {
+            "buttonStartText": "Start",
+            "defaultButtonText": "Begin nu",
+            "emptyPromptText": "Je hebt nog geen vraag gesteld. Vul minimaal 4 tekens in.",
+            "prompPlaceHolderText": "",
+            "buttonSendQuestionText": "Wat wil je weten?"
+        },
+        "chat": {
+            "welcomeText": "Hallo, wat kan ik voor je betekenen?",
+            "chatTitle": "Stel je vraag aan ",
+            "chatUserLabel": "Gebruiker",
+            "chatBotLabel": "Medical assistent",
+            "chatShowText": "Toon",
+            "chatHideText": "Verberg",
+            "chatPostitionText": "Links / Rechts"
+        }
+    },
+    "assets ": {
+        "mainBackgroundImage": ""
+    },
+    "stylesheet": {
+        "file": "custom.css"
+    }
+}

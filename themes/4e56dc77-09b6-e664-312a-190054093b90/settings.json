@@ -1,0 +1,38 @@
+{
+    "app": {
+        "title": "TUI Assistent",
+        "assistentId": "asst_7Up6BCV4GHZBynp5xC2o3cMh",
+        "avatarId": "37f4d912aa564663a1cf8d63acd0e1ab",
+        "voiceId": "a74c7cb1e1f047a589dda7a6103fc365"
+    },
+    "content": {
+        "general": {
+            "windowTitle": "TUI - streaming avatar"
+        },
+        "startup": {
+            "startButtonText": "Start"
+        },
+        "main": {
+            "buttonStartText": "Start",
+            "defaultButtonText": "Begin nu",
+            "emptyPromptText": "Je hebt nog geen vraag gesteld. Vul minimaal 4 tekens in.",
+            "prompPlaceHolderText": "",
+            "buttonSendQuestionText": "Wat wil je weten?"
+        },
+        "chat": {
+            "welcomeText": "Hallo, wat kan ik voor je betekenen?",
+            "chatTitle": "Stel je vraag aan TUI",
+            "chatUserLabel": "Gebruiker",
+            "chatBotLabel": "TUI assistent",
+            "chatShowText": "Toon",
+            "chatHideText": "Verberg",
+            "chatPostitionText": "Links / Rechts"
+        }
+    },
+    "assets ": {
+        "mainBackgroundImage": ""
+    },
+    "stylesheet": {
+        "file": "custom.css"
+    }
+}

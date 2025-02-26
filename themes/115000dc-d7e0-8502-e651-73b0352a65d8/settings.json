@@ -1,0 +1,38 @@
+{
+    "app": {
+        "title": "HeyGen V3",
+        "assistentId": "asst_GZj2cG9pbu9wL9mrw84RJsQi",
+        "avatarId": "Sarah_studio_20240531",
+        "voiceId": "a74c7cb1e1f047a589dda7a6103fc365"
+    },
+    "content": {
+        "general": {
+            "windowTitle": "SARA.io - your streaming avatar"
+        },
+        "startup": {
+            "startButtonText": "Start"
+        },
+        "main": {
+            "buttonStartText": "Starten",
+            "defaultButtonText": "Vraag? Stel ze mij",
+            "emptyPromptText": "Je hebt nog geen vraag gesteld. Vul minimaal 4 tekens in.",
+            "prompPlaceHolderText": "",
+            "buttonSendQuestionText": "Wat wil je weten?"
+        },
+        "chat": {
+            "welcomeText": "Hallo, wat wat wil je weten?",
+            "chatTitle": "Stel je vraag aan de avatar!",
+            "chatUserLabel": "Gebruiker",
+            "chatBotLabel": "Avatar",
+            "chatShowText": "Toon",
+            "chatHideText": "Verberg",
+            "chatPostitionText": "Links / Rechts"
+        }
+    },
+    "assets ": {
+        "mainBackgroundImage": ""
+    },
+    "stylesheet": {
+        "file": ""
+    }
+}

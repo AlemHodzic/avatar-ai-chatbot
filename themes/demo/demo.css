@@ -1,0 +1,31 @@
+.main{
+    background-image:url(../demo/assets/images/iamsara-demo-cocktail.jpg);
+    background-size:cover;   
+    background-color:transparent;
+}
+
+.startup{
+    background-image:url(../demo/assets/images/iamsara-demo-cocktail.jpg);
+    background-size:cover;   
+    background-color:transparent;
+}
+
+.avatarWrapper{
+    background: none;
+    background-color:transparent;
+}
+
+.videoSectionWrap .videoWrap{
+    background-image:none;
+    background-color:transparent;
+    border-radius: 0;
+}
+
+.videoWrap .videoEle{
+    border-radius: 0;
+}
+
+.talkRow{
+    background-color: #bd935c;
+    min-height:10vh;
+}
