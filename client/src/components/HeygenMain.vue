@@ -1,13 +1,21 @@
 <template>
     <div class="main" >
 
+        <!-- Add loading overlay -->
+        <div v-if="isLoading" class="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <div class="loading-text">Even geduld...</div>
+            </div>
+        </div>
+
         <p id="status"></p>
 
         <div id="introRow" v-if="showIntroRow" class="introRow avatarWrapper fullscreen animate__animated animate__fadeIn">
             <div class="avatarStillWrapper">
                 <span class="brandName" v-if="showlogo"><img :src="logoSrc" class="logo"></span>
                 <button id="closeBtnPreview" class="closeBtn" @click="closeAvatar" >X</button>
-                <button id="startAvtBtn" @click="initAvatar">{{defaultButton}}</button>
+                <!-- <button v-else id="startAvtBtn" @click="initAvatar">{{defaultButton}}</button> -->
             </div>
         </div>
             <div id="avatarArea" v-if="showAvatarArea" class="videoSectionWrap avatarWrapper fullscreen animate__animated animate__fadeIn">
@@ -104,6 +112,9 @@ let mediaCanPlay = false;
 
 let textInputActive = ref(false)
 
+// Add this with other refs at the top of the script
+const isLoading = ref(false);
+
 //close the avatar
 async function closeAvatar(){
   console.log('close avatar');
@@ -197,32 +208,28 @@ async function speechResult(resultText){
 }
 
 //init avatar
-async function initAvatar(event) {
-
+async function initAvatar() {
     console.log('init avatar');
+    isLoading.value = true;
 
     const timeout = 700;
-    event.currentTarget.innerHTML = '...momentje...';
-    await createNewSession().then(result => {
-        //console.log('session created');
-        startAndDisplaySession().then(result => {
-            //console.log('avatar started');
-
-            setTimeout(() => {
-
-            //hideElement(introRow);
-            showIntroRow.value = false;
-            //showElement(avatarArea);
-            showAvatarArea.value = true;
-
-            //showMediaElement.value = true;
-            //showCanvasElement.value = true
-
-            }, timeout);
-
-
+    try {
+        await createNewSession().then(result => {
+            startAndDisplaySession().then(result => {
+                setTimeout(() => {
+                    showIntroRow.value = false;
+                    showAvatarArea.value = true;
+                    isLoading.value = false; // Turn off loading when complete
+                }, timeout);
+            }).catch(error => {
+                console.error('Error in startAndDisplaySession:', error);
+                isLoading.value = false; // Turn off loading on error
+            });
         });
-    });
+    } catch (error) {
+        console.error('Error initializing avatar:', error);
+        isLoading.value = false; // Turn off loading on error
+    }
 }
 
 function updateStatus(message) {
@@ -645,6 +652,11 @@ function isCloseToGreen(color) {
   return green > 90 && red < 90 && blue < 90;
 }
 
+// Make initAvatar accessible to parent
+defineExpose({
+    initAvatar
+});
+
 </script>  
 
 <style scoped>
@@ -673,4 +685,49 @@ function isCloseToGreen(color) {
   flex-grow: 1;
 } */
 
+.loading-text {
+    padding: 10px;
+    text-align: center;
+    font-style: italic;
+    color: #666;
+}
+
+/* Add these new styles */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loading-text {
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 </style>

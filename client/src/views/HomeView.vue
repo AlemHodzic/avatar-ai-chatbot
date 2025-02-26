@@ -1,9 +1,8 @@
-
 <template>
  
     <HeygenStartup ref="heygenStartup" v-if="startupActive" 
     :start-button-text="startButtonText" 
-    @expand-avatar="expandAvatar"></HeygenStartup>   
+    @start-direct-avatar="startDirectAvatar"></HeygenStartup>   
 
     <HeygenMain ref="heygenMain" v-if="mainActive" 
     @close-avatar-two="closeAvatar" 
@@ -30,7 +29,7 @@
 
 <script setup>
 
-import { ref, inject, reactive, onMounted, onBeforeMount, onBeforeUnmount } from 'vue'
+import { ref, inject, reactive, onMounted, onBeforeMount, onBeforeUnmount, nextTick } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
 import HeygenStartup from '../components/HeygenStartup.vue'
@@ -354,6 +353,27 @@ function shrinkIframe() {
 
   //endFullscreen();
 }
+
+const heygenMain = ref(null);
+
+async function startDirectAvatar() {
+    // Handle iframe expansion
+    expandIframe();
+    
+    // Switch views
+    startupActive.value = false;
+    mainActive.value = true;
+    
+    // Get reference to HeygenMain component
+    nextTick(() => {
+        if (heygenMain.value) {
+            heygenMain.value.initAvatar();
+        } else {
+            console.error('HeygenMain component not found');
+        }
+    });
+}
+
 </script>
 
 <style scoped>
