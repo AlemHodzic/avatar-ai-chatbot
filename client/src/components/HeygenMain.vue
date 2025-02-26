@@ -1,5 +1,3 @@
-
-
 <template>
     <div class="main" >
 
@@ -108,12 +106,24 @@ let textInputActive = ref(false)
 
 //close the avatar
 async function closeAvatar(){
+  console.log('close avatar');
+  if(sessionInfo != null){
+    // Call backend to handle session end
+    await fetch('/api/openai/end-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        sessionId: sessionInfo.session_id,
+        reason: 'user_ended'
+      })
+    });
+    
+    stopSession(sessionInfo.session_id)
+  }
 
-      if(sessionInfo != null){
-        stopSession(sessionInfo.session_id)
-      }
-
-    emit('closeAvatarTwo');
+  emit('closeAvatarTwo');
 }
 
 async function showChatWindow(){

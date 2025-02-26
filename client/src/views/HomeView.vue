@@ -318,11 +318,11 @@ function startFullscreen() {
   mainActive.value = true;
   startupActive.value = false;  
 
-  targetFrame.postMessage({
-    event_id: 'expandIframe',
-    type: 'streaming-embed',
-    action: 'start-fullscreen'
-  }, parentOrigin);
+  // targetFrame.postMessage({
+  //   event_id: 'expandIframe',
+  //   type: 'streaming-embed',
+  //   action: 'start-fullscreen'
+  // }, parentOrigin);
 }
 
 function endFullscreen() {

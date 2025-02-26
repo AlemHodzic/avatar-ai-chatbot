@@ -4,6 +4,7 @@ const OpenAI = require('openai');
 const fs = require('node:fs');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
+const { EventEmitter } = require('events');
 
 let openai_apikey = process.env.OPENAI_APIKEY;
 let openai_projectid = process.env.OPENAI_PROJECTID;
@@ -24,7 +25,8 @@ let assistantId = openai_assistantid;
 
 const systemSetup = "Who are you? I'm Sara, which stands for Summit Avatar Resources Applications. With our product VideoTwin we make of you the best digital copy possible."
 
-
+const sessionEvents = new EventEmitter();
+let activeSessions = new Map(); // Track active sessions
 
 // Define the main route
 router.get('/', async (req, res) => {
@@ -107,6 +109,8 @@ router.get('/thread', (req, res) => {
 
 
 let currentThreadId = null;
+let pollingInterval = null;
+
 router.post('/message', async (req, res) => {
 
     //update assistantId
@@ -127,23 +131,29 @@ router.post('/message', async (req, res) => {
         currentThreadId = thread.id;
     }
 
+    // Reset timeout on new message
+    startSessionTimeout(currentThreadId);
+
     const threadId = currentThreadId;
 
     let message = req.body.prompt;
     //console.log(message);
 
     await addMessage(threadId, message).then(message => {
-
         // Run the assistant
         let result = runAssistant(threadId).then(run => {
             const runId = run.id;
+
+            // Clear any existing interval first
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
 
             // Check the status
             pollingInterval = setInterval(() => {
                 checkingStatus(res, threadId, runId);
             }, 600);
         });
-
     });
 
 });
@@ -189,43 +199,38 @@ async function runAssistant(threadId) {
 }
 
 async function checkingStatus(res, threadId, runId) {
+    try {
+        const runObject = await openai.beta.threads.runs.retrieve(threadId, runId);
+        const status = runObject.status;
+        
+        console.log('Current status: ' + status);
 
-    const runObject = await openai.beta.threads.runs.retrieve(
-        threadId,
-        runId
-    );
+        if (status === 'completed') {
+            clearInterval(pollingInterval);
+            pollingInterval = null; // Prevent further execution
 
-    const status = runObject.status;
-    //console.log(runObject)
-    console.log('Current status: ' + status);
+            const messagesList = await openai.beta.threads.messages.list(threadId);
+            let messages = messagesList.body.data.map(msg => msg.content);
 
-    if (status == 'completed') {
-        clearInterval(pollingInterval);
+            if (messages.length === 0 || !messages[0][0]?.text?.value) {
+                return res.status(500).json({ error: 'No response from assistant' });
+            }
 
-        const messagesList = await openai.beta.threads.messages.list(threadId);
-        let messages = []
+            let answerText = messages[0][0].text.value;
 
-        messagesList.body.data.forEach(message => {
-            messages.push(message.content);
-        });
+            if (!res.headersSent) {  // ✅ Ensure response hasn't been sent
+                return res.json({ text: answerText });
+            }
+        }
+    } catch (error) {
+        console.error("Error in checkingStatus:", error);
 
-        //console.log(JSON.stringify(messages[0][0]));
-        //console.log(JSON.stringify(messages[0][0].text.value));
-        let answerText = messages[0][0].text.value;
-
-        //const wordsPerMinute = 120;
-        //let wordCount = countWords(answerText);
-        //let timeNeeded = (60 / 130) * wordCount;
-
-        //console.log(`aantal woorden ${wordCount}`);
-        //console.log(`aantal seconden ${timeNeeded}`);
-
-        //answerText = removeSourceText(answerText);
-
-        res.json({ text: answerText });
-        //res.json({ messages });
+        if (!res.headersSent) {  // ✅ Prevent duplicate responses
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
     }
 }
+
 
 function countWords(str) {
 
@@ -249,7 +254,72 @@ function removeSourceText(input) {
     return input;
 }
 
-// End assistent functions
+// Add these new routes/functions
+router.post('/end-session', async (req, res) => {
+  try {
+    const { sessionId, reason } = req.body;
+    
+    await handleSessionEnd(currentThreadId, reason);
+    
+    // Clear any existing timeout
+    if (activeSessions.has(currentThreadId)) {
+      clearTimeout(activeSessions.get(currentThreadId));
+      activeSessions.delete(currentThreadId);
+    }
+    
+    res.json({ status: 'success' });
+  } catch (error) {
+    console.error('Error ending session:', error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+async function handleSessionEnd(threadId, reason) {
+  if (!threadId) return;
+
+  try {
+    // Mock webhook payload
+    const webhookPayload = {
+      thread_id: threadId,
+      event: 'conversation_end',
+      user_email: 'user@example.com', // Mock email for demo
+      reason: reason
+    };
+
+    // Mock webhook call
+    console.log('Webhook called with payload:', webhookPayload);
+    
+    // Clear the thread ID and session
+    currentThreadId = null;
+    activeSessions.delete(threadId);
+
+  } catch (error) {
+    console.error('Error in webhook call:', error);
+    // You might want to retry the webhook call here
+  }
+}
+
+// Add session timeout handling
+function startSessionTimeout(threadId) {
+  // Clear any existing timeout
+  if (activeSessions.has(threadId)) {
+    clearTimeout(activeSessions.get(threadId));
+  }
+
+  // Set new timeout - 10 minutes
+  const timeout = setTimeout(async () => {
+    await handleSessionEnd(threadId, 'timeout');
+    activeSessions.delete(threadId);
+  }, 10 * 60 * 1000); // Back to 10 minutes
+
+  activeSessions.set(threadId, timeout);
+}
+
+// Clean up on server shutdown
+process.on('SIGTERM', () => {
+  activeSessions.forEach((timeout) => clearTimeout(timeout));
+});
+
 
 // export the router module so that server.js file can use it
 module.exports = router;
