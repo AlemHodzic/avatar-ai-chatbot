@@ -334,12 +334,12 @@ function endFullscreen() {
 
 
 function expandIframe() {
-
-  targetFrame.postMessage({
-    event_id: 'expandIframe',
-    type: 'streaming-embed',
-    action: 'show'
-  }, parentOrigin);
+  // TEMPORARILY disabled iframe expansion
+  // targetFrame.postMessage({
+  //   event_id: 'expandIframe',
+  //   type: 'streaming-embed',
+  //   action: 'show'
+  // }, parentOrigin);
 
 }
 

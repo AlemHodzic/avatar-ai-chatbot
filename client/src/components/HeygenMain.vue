@@ -570,26 +570,65 @@ async function talkToOpenAI(prompt) {
 
 // let the avatar repeat (say) the text
 async function repeat(session_id, text) {
-  const response = await fetch('/api/session/task', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ session_id, text }),
-  });
-  if (response.status === 500) {
-    console.error('Server error');
-    updateStatus('Server Error. Please ask the staff if the service has been turned on');
-    throw new Error('Server error');
-  } else {
+  try {
+    const response = await fetch('/api/session/task', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ session_id, text }),
+    });
 
-    //set avatar is talking (duration is unkown)
+    if (response.status === 500) {
+      console.error('Server error');
+      updateStatus('Server Error. Please ask the staff if the service has been turned on');
+      avatarIsTalking.value = false; // Reset if error
+      throw new Error('Server error');
+    }
+
+    // Set avatar to talking state
     avatarIsTalking.value = true;
 
+    // Start monitoring the avatar's speech status
+    monitorAvatarSpeech();
+
     const data = await response.json();
-    //return data.data;
     return data;
+  } catch (error) {
+    avatarIsTalking.value = false; // Reset if error
+    throw error;
   }
+}
+
+// Add this new function to monitor speech status
+function monitorAvatarSpeech() {
+  // Check audio activity every 500ms
+  const checkInterval = setInterval(() => {
+    if (mediaElement.value && mediaElement.value.srcObject) {
+      // Get audio tracks
+      const audioTracks = mediaElement.value.srcObject.getAudioTracks();
+      
+      if (audioTracks.length > 0) {
+        const audioTrack = audioTracks[0];
+        
+        // If track is not active or ended, avatar has finished talking
+        if (!audioTrack.enabled || audioTrack.readyState === 'ended') {
+          avatarIsTalking.value = false;
+          clearInterval(checkInterval);
+        }
+      } else {
+        // No audio tracks means no talking
+        avatarIsTalking.value = false;
+        clearInterval(checkInterval);
+      }
+    }
+  }, 500);
+
+  // Failsafe: Clear the talking state after maximum expected duration (e.g., 30 seconds)
+  setTimeout(() => {
+    avatarIsTalking.value = false;
+    clearInterval(checkInterval);
+  }, 5000);
 }
 
 let renderID = 0;

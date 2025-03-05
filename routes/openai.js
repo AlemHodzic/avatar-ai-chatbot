@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const { EventEmitter } = require('events');
+const fetch = require('node-fetch');
 
 let openai_apikey = process.env.OPENAI_APIKEY;
 let openai_projectid = process.env.OPENAI_PROJECTID;
@@ -275,29 +276,50 @@ router.post('/end-session', async (req, res) => {
 });
 
 async function handleSessionEnd(threadId, reason) {
-  if (!threadId) return;
-
-  try {
-    // Mock webhook payload
-    const webhookPayload = {
-      thread_id: threadId,
-      event: 'conversation_end',
-      user_email: 'user@example.com', // Mock email for demo
-      reason: reason
-    };
-
-    // Mock webhook call
-    console.log('Webhook called with payload:', webhookPayload);
-    
-    // Clear the thread ID and session
-    currentThreadId = null;
-    activeSessions.delete(threadId);
-
-  } catch (error) {
-    console.error('Error in webhook call:', error);
-    // You might want to retry the webhook call here
-  }
-}
+    if (!threadId) return;
+  
+    try {
+      // Get the current timestamp in DD/MM/YYYY HH:mm:ss format
+      const now = new Date();
+      const formattedTimestamp = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+  
+      const webhookPayload = {
+        thread_id: threadId,
+        event: 'conversation_end',
+        user_email: 'test@email.com', // Placeholder, update when user emails are available
+        timestamp: formattedTimestamp,
+        reason: reason
+      };
+  
+      // Send to Zapier webhook
+      const response = await fetch('https://hooks.zapier.com/hooks/catch/18993816/2q2fszr/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(webhookPayload)
+      });
+  
+      // Get the response body
+      const responseBody = await response.text();
+      console.log('Response status:', response.status);
+      console.log('Response body:', responseBody);
+  
+      if (!response.ok) {
+        throw new Error(`Webhook failed with status: ${response.status}. Body: ${responseBody}`);
+      }
+  
+      console.log('Webhook sent successfully:', webhookPayload);
+  
+      // Clear the thread ID and session
+      currentThreadId = null;
+      activeSessions.delete(threadId);
+  
+    } catch (error) {
+      console.error('Error in webhook call:', error);
+    }
+  }  
 
 // Add session timeout handling
 function startSessionTimeout(threadId) {
