@@ -52,7 +52,17 @@ app.use(sessions({
   }
 }));
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',  // Development
+    'https://avatar.fonkelmedia.nl', // Production
+    'http://localhost:3000'   // Local backend
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Api-Key']
+}));
+
 app.use(express.json())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -67,7 +77,14 @@ app.use('/api/cms', cmsRoute);
 app.use('/api/openai', avatarRoute);
 app.use('/api/session', sesRoute);
 
-
+// Add this after your other routes
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    message: 'API is working!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 //enable for publish and live
 app.use(express.static(process.cwd() + '/client/dist'));

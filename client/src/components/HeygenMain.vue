@@ -61,6 +61,7 @@
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import TalkToText from './TalkToText.vue'
+import { API_CONFIG } from '../config/config'
 
 const props = defineProps({
   defaultButton: { type: String, default: 'Ik wil wat weten' },
@@ -120,7 +121,7 @@ async function closeAvatar(){
   console.log('close avatar');
   if(sessionInfo != null){
     // Call backend to handle session end
-    await fetch('/api/openai/end-session', {
+    await fetch(`${API_CONFIG.baseUrl}/api/openai/end-session`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -348,7 +349,7 @@ async function getNewSession(quality, avatar_name, voice_id,video_encoding) {
     //console.log('params');
     //console.log(JSON.stringify(params));
 
-    const response = await fetch(`/api/session/create`, {
+    const response = await fetch(`${API_CONFIG.baseUrl}/api/session/create`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -374,7 +375,7 @@ async function getNewSession(quality, avatar_name, voice_id,video_encoding) {
 
 // start the session with heygen
 async function startSession(session_id, sdp) {
-    const response = await fetch(`/api/session/start`, {
+    const response = await fetch(`${API_CONFIG.baseUrl}/api/session/start`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -403,7 +404,7 @@ async function interruptAvatar() {
   const session_id = sessionInfo.session_id;
 
   //console.log('interrupt start..' + session_id)
-  const response = await fetch(`/api/session/interrupt`, {
+  const response = await fetch(`${API_CONFIG.baseUrl}/api/session/interrupt`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -429,7 +430,7 @@ async function interruptAvatar() {
 
 // stop session heygen
 async function stopSession(session_id) {
-  const response = await fetch(`/api/session/stop`, {
+  const response = await fetch(`${API_CONFIG.baseUrl}/api/session/stop`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -450,7 +451,7 @@ async function stopSession(session_id) {
 // submit the ICE candidate
 async function handleICE(session_id, candidate) {
 
-    const response = await fetch(`/api/session/handleice`, {
+    const response = await fetch(`${API_CONFIG.baseUrl}/api/session/handleice`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -551,7 +552,7 @@ function enableTalkRow() {
 async function talkToOpenAI(prompt) {
 
     //let openaiHost = currentDomain;
-    const response = await fetch(`/api/openai/message`, {
+    const response = await fetch(`${API_CONFIG.baseUrl}/api/openai/message`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -571,7 +572,7 @@ async function talkToOpenAI(prompt) {
 // let the avatar repeat (say) the text
 async function repeat(session_id, text) {
   try {
-    const response = await fetch('/api/session/task', {
+    const response = await fetch(`${API_CONFIG.baseUrl}/api/session/task`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

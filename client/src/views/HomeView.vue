@@ -35,6 +35,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import HeygenStartup from '../components/HeygenStartup.vue'
 import HeygenMain from '../components/HeygenMain.vue'
 import ChatWindow from '../components/ChatWindow.vue'
+import { API_CONFIG } from '../config/config'
 
 let themeId = "115000dc-d7e0-8502-e651-73b0352a65d8";
 let chatWindowShowHideText = 'Toon Chat';
@@ -84,7 +85,7 @@ function checkThemeId(){
 function loadConfig(){
 
 
-  fetch(`/api/cms/loadtheme`, {
+  fetch(`${API_CONFIG.baseUrl}/api/cms/loadtheme`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ themeId : themeId }),
