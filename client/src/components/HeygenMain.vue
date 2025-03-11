@@ -336,6 +336,7 @@ async function startAndDisplaySession() {
 
 //get and create a session for using heygen
 async function getNewSession(quality, avatar_name, voice_id,video_encoding) {
+  console.log('getNewSession', quality, avatar_name, voice_id, video_encoding);
 
     const params = {
         quality,
