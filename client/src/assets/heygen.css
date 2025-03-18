@@ -44,7 +44,7 @@
   }
   
   .startupWrapper{
-    background-image: url(../assets/images/doctor-avatar-still.png);
+    background-image: url(../assets/images/doctor-avatar-still.jpeg);
     background-position: bottom center;
     background-size: contain;
     display:flex;
@@ -97,7 +97,7 @@
   
   .introRow{
   
-    background-image: url(../assets/images/doctor-avatar-still.png);
+    background-image: url(../assets/images/doctor-avatar-still.jpeg);
     background-size: contain;
     background-repeat:no-repeat;
     background-position: center bottom;
@@ -108,7 +108,7 @@
     width:100%;
     height:100%;
     display:flex;
-    background-image: url(../assets/images/doctor-avatar-still.png);
+    background-image: url(../assets/images/doctor-avatar-still.jpeg);
     background-size: contain;
     background-repeat:no-repeat;
     background-position: center bottom;
@@ -316,7 +316,7 @@
     /*  ),*/
     /*  linear-gradient(135deg, #ffeede 5.71%, #ffd9d9 47%, #a3dce7 93.47%);*/
   
-    background-color: var(--sara-red);
+    /* background-color: var(--sara-red); */
     /* background-image:url(../assets/images/sara-logo.png); */
     background-repeat: no-repeat;
     background-size: cover;
