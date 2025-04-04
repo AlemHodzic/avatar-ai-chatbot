@@ -2,6 +2,7 @@
  
     <HeygenStartup ref="heygenStartup" v-if="startupActive" 
     :start-button-text="startButtonText" 
+    :loading="loading"
     @start-direct-avatar="startDirectAvatar"></HeygenStartup>   
 
     <HeygenMain ref="heygenMain" v-if="mainActive" 
@@ -49,6 +50,7 @@ const mainActive = ref(false);
 const userquestion = ref(null);
 const chatWindow = ref(null);
 const theme = ref({});
+const loading = ref(true);
 
 const configAvatarId = ref('');
 const configVoiceId = ref('');
@@ -83,7 +85,7 @@ function checkThemeId(){
 }
 
 function loadConfig(){
-
+  loading.value = true;
 
   fetch(`${API_CONFIG.baseUrl}/api/cms/loadtheme`, {
     method: 'POST',
@@ -92,7 +94,6 @@ function loadConfig(){
     })
     .then((response) => response.json())
     .then((json) => {
-
       theme.value = json;
 
       //console.log(theme.value.app.avatarId);
@@ -120,21 +121,29 @@ function loadConfig(){
       if(theme.value.stylesheet.file.length){
         addStylesheet(theme.value.stylesheet.file);
       }
-});
+      
+      setTimeout(() => {
+        loading.value = false;
+      }, 500);
+    })
+    .catch(error => {
+      console.error("Error loading theme:", error);
+      loading.value = false;
+    });
+}
 
 function addStylesheet(){
-
+  console.log('addStylesheet');
       (function(){
       var styles = document.createElement('link');
       styles.rel = 'stylesheet';
       styles.type = 'text/css';
       styles.media = 'screen';
-      styles.href = `./themes/${themeId}/custom.css`;
+      styles.href = `${API_CONFIG.baseUrl}/themes/${themeId}/custom.css`;
+      console.log('addStylesheet ' + styles.href);
       document.getElementsByTagName('head')[0].appendChild(styles);
     })();  
   }
-
-}
 
 function loadDefaultSettings() {
 
