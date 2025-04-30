@@ -208,6 +208,49 @@ async function speechResult(resultText){
   
 }
 
+// Add this new function that sends a greeting without modifying the input field
+async function sendAutomaticGreeting() {
+  // Set avatar is not talking
+  await interruptAvatar();
+  avatarIsTalking.value = false;
+  
+  if (!sessionInfo) {
+    updateStatus('Please create a connection first');
+    return;
+  }
+
+  // Use a Dutch introduction prompt that asks the AI to introduce itself
+  const greeting = "Hi, wie ben jij?";
+  
+  // Add message to chat window (just the bot's message for a more natural feel)
+  emit('addChatMessage', 'user', greeting);
+  
+  updateStatus('Talking to LLM... please wait');
+  
+  disableTalkRow();
+  
+  try {
+    const text = await talkToOpenAI(greeting);
+    
+    if (text) {
+      // Add message to chat window
+      emit('addChatMessage', 'bot', text);
+      
+      // Send the AI's response to Heygen's streaming.task API
+      const resp = await repeat(sessionInfo.session_id, text);
+      updateStatus('LLM response sent successfully');
+      enableTalkRow();
+    } else {
+      updateStatus('Failed to get a response from AI');
+      enableTalkRow();
+    }
+  } catch (error) {
+    console.error('Error talking to AI:', error);
+    enableTalkRow();
+    updateStatus('Error talking to AI');
+  }
+}
+
 //init avatar
 async function initAvatar() {
     console.log('init avatar');
@@ -221,6 +264,13 @@ async function initAvatar() {
                     showIntroRow.value = false;
                     showAvatarArea.value = true;
                     isLoading.value = false; // Turn off loading when complete
+                    
+                    // Add a small delay before sending the automatic greeting
+                    setTimeout(() => {
+                        // Call the automatic greeting function instead of setting the input field
+                        sendAutomaticGreeting();
+                    }, 1000);
+                    
                 }, timeout);
             }).catch(error => {
                 console.error('Error in startAndDisplaySession:', error);
